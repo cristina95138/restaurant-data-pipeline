@@ -1,0 +1,43 @@
+version: 2
+
+models:
+  - name: dim_store
+    description: Restaurant locations and the identifier each source system uses for them.
+    columns:
+      - name: store_key
+        description: Shared store identifier used across every source.
+        data_tests: [unique, not_null]
+      - name: pos_location_code
+        data_tests: [unique, not_null]
+      - name: labor_store_number
+        data_tests: [unique, not_null]
+
+  - name: fct_sales_daily
+    description: Net sales, checks and guests per store per business date.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [store_key, business_date]
+    columns:
+      - name: store_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_store')
+                field: store_key
+
+  - name: fct_labor_daily
+    description: Labor hours, shifts and distinct (pseudonymised) employees per store per business date.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [store_key, business_date]
+    columns:
+      - name: store_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_store')
+                field: store_key

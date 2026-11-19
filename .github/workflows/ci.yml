@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install
+        run: pip install -e ".[dev]"
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Unit and integration tests
+        run: pytest -q
+
+      - name: End-to-end on sample data (ingest -> dbt build -> checks)
+        env:
+          DUCKDB_PATH: ${{ github.workspace }}/warehouse.duckdb
+          PYTHONPATH: src
+        run: |
+          python -m pipeline ingest --source all --date 2026-11-15 --days 3 --mock
+          (cd dbt && dbt build --profiles-dir . --target dev)
+          python -m pipeline freshness --today 2026-11-16
+          python -m pipeline reconcile --threshold 0.99
+
+      - name: Block committed secrets
+        run: |
+          if grep -rEn --exclude-dir=.git --exclude=ci.yml "(BEGIN (RSA|OPENSSH) PRIVATE KEY|client_secret\s*=\s*['\"][^'\"]+['\"])" .; then
+            echo "Possible secret committed"; exit 1
+          fi

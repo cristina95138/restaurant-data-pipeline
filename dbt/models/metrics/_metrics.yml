@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: recon_store_day
+    description: Store-days seen in POS and/or labor. Used to measure cross-source reconciliation.
+
+  - name: store_day_metrics
+    description: >
+      Daily performance per restaurant, safe for AI agents to read (no personal data).
+      Grain: one row per store_key per business_date. Only store-days present in both POS and labor.
+    data_tests:
+      - unique_combination:
+          arguments:
+            columns: [store_key, business_date]
+    columns:
+      - name: store_key
+        description: Shared store identifier (see dim_store).
+      - name: business_date
+        description: Restaurant business date (not calendar date of the transaction timestamp).
+      - name: net_sales
+        description: Sales after discounts, before tax, in USD.
+      - name: labor_hours
+        description: Total clocked hours across all shifts that day.
+      - name: sales_per_labor_hour
+        description: net_sales / labor_hours. Core input for labor scheduling.
+        data_tests: [not_null]
+      - name: avg_spend_per_guest
+        description: net_sales / guest_count, in USD.

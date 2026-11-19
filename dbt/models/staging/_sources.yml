@@ -1,0 +1,15 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: Untyped landing tables written by the Python connectors (all columns STRING + load metadata).
+    loaded_at_field: "cast(_ingested_at as timestamp)"
+    freshness:
+      warn_after: {count: 26, period: hour}
+      error_after: {count: 36, period: hour}
+    tables:
+      - name: pos_sales
+        description: One row per closed POS check. Card and guest contact fields are removed before load.
+      - name: labor_shifts
+        description: One row per timekeeping shift. Names, SSNs and pay rates are removed before load; employee_id is a keyed hash.

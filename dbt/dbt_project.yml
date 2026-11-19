@@ -1,0 +1,32 @@
+name: restaurant_warehouse
+version: "0.1.0"
+config-version: 2
+profile: restaurant_warehouse
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+
+vars:
+  recon_threshold: 0.99
+
+seeds:
+  restaurant_warehouse:
+    +schema: conformed
+
+models:
+  restaurant_warehouse:
+    staging:
+      +schema: staging
+      +materialized: view
+    conformed:
+      +schema: conformed
+      +materialized: table
+    metrics:
+      +schema: metrics
+      +materialized: table
+      # Push descriptions into BigQuery so agents (via MCP) can read what each column means.
+      +persist_docs:
+        relation: "{{ target.type == 'bigquery' }}"
+        columns: "{{ target.type == 'bigquery' }}"

@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: stg_pos_sales
+    columns:
+      - name: check_id
+        data_tests: [unique, not_null]
+      - name: business_date
+        data_tests: [not_null]
+      - name: order_channel
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [dine_in, takeout, delivery]
+
+  - name: stg_labor_shifts
+    columns:
+      - name: shift_id
+        data_tests: [unique, not_null]
+      - name: hours_worked
+        data_tests:
+          - not_null
+          - in_range:
+              arguments:
+                min_value: 0
+                max_value: 16

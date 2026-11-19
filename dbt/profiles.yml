@@ -1,0 +1,18 @@
+restaurant_warehouse:
+  target: dev
+  outputs:
+    # Local development and CI: a DuckDB file, no cloud account needed.
+    dev:
+      type: duckdb
+      path: "{{ env_var('DUCKDB_PATH', '../warehouse.duckdb') }}"
+      threads: 4
+
+    # Production: BigQuery via the Cloud Run job's service account (no key files).
+    prod:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('BQ_PROJECT', 'set-me') }}"
+      dataset: analytics
+      location: US
+      threads: 4
+      job_execution_timeout_seconds: 600

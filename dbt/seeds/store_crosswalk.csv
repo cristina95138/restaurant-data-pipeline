@@ -1,0 +1,6 @@
+store_key,store_name,market,timezone,pos_location_code,labor_store_number
+S014,Midtown,NYC,America/New_York,NYC-014,1014
+S022,Brooklyn Heights,NYC,America/New_York,NYC-022,1022
+S103,River North,CHI,America/Chicago,CHI-003,2003
+S207,Midtown Atlanta,ATL,America/New_York,ATL-007,3007
+S211,Decatur,ATL,America/New_York,ATL-011,3011
